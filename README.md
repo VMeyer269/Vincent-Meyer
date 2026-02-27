@@ -1,35 +1,49 @@
 # UiPath Excel Filter Bot (Invoke Code, C#)
 
-Vergleich von zwei Excel-Monatsstaenden in UiPath mit `Invoke Code` (C#) auf Basis von `DataTable`.
+Compares two monthly Excel datasets in UiPath (`dtAlt`, `dtNeu`) and produces a change table (`dtChanges`) using a single `Invoke Code` activity in C#.
 
-## Inhalt
+## Repository Content
 
-- [uipath/InvokeCode_ExcelAbgleich.cs](/tmp/Ui-Path-Excel-Filter-Bot/uipath/InvokeCode_ExcelAbgleich.cs)
-- [uipath/README_UiPath_ExcelAbgleich.md](/tmp/Ui-Path-Excel-Filter-Bot/uipath/README_UiPath_ExcelAbgleich.md)
+- `uipath/InvokeCode_ExcelAbgleich.cs` - production-ready Invoke Code snippet
+- `uipath/README_UiPath_ExcelAbgleich.md` - detailed German documentation
 
-## Was der Bot erkennt
+## What It Detects
 
-- `NEU`: Bilanzkreis nur in neuem Monat vorhanden
-- `WEG`: Bilanzkreis nur im alten Monat vorhanden
-- `RLM_NEU` / `RLM_WEG`: Typwechsel innerhalb bestehender Bilanzkreise
-- `SLP_NEU` / `SLP_WEG`: Typwechsel innerhalb bestehender Bilanzkreise
-- `WECHSEL_TAGES_STUNDEN`: Regimewechsel zwischen Tages- und Stundenlogik
+- `NEU`: balancing group exists only in the new month
+- `WEG`: balancing group exists only in the old month
+- `RLM_NEU` / `RLM_WEG`: RLM appears/disappears within existing balancing groups
+- `SLP_NEU` / `SLP_WEG`: SLP appears/disappears within existing balancing groups
+- `WECHSEL_TAGES_STUNDEN`: switch between daily and hourly regime
 
-## Technische Highlights
+## Technical Highlights
 
-- Robustes Spaltenhandling ohne `ItemArray`-Fehler
-- Case-insensitive Erkennung (`RLM`/`SLP`)
-- Optionales Deduplizieren und Sortieren der Ergebnisdaten
-- Direkt nutzbar in UiPath `Invoke Code` (In/Out `DataTable`)
+- Safe row-copying across varying schemas (no `ItemArray` mismatch issues)
+- Case-insensitive type detection (`RLM`/`SLP`)
+- Optional deduplication and deterministic sorting
+- Works directly in UiPath `Invoke Code` with `DataTable` arguments
 
-## Quick Start in UiPath
+## Quick Start (UiPath)
 
-1. `Invoke Code` Activity einfuegen (`CSharp`)
-2. In-Arguments: `dtAlt`, `dtNeu` (`System.Data.DataTable`)
-3. Out-Argument: `dtChanges` (`System.Data.DataTable`)
-4. Code aus `uipath/InvokeCode_ExcelAbgleich.cs` einfuegen
-5. Namespaces: `System`, `System.Data`, `System.Linq`, `System.Collections.Generic`
+1. Add an `Invoke Code` activity (`CSharp`).
+2. Add In arguments:
+   - `dtAlt` (`System.Data.DataTable`)
+   - `dtNeu` (`System.Data.DataTable`)
+3. Add Out argument:
+   - `dtChanges` (`System.Data.DataTable`)
+4. Paste code from `uipath/InvokeCode_ExcelAbgleich.cs`.
+5. Ensure namespaces:
+   - `System`
+   - `System.Data`
+   - `System.Linq`
+   - `System.Collections.Generic`
 
-## Hinweis
+## Required Input Columns
 
-Bitte vor produktivem Einsatz interne Begriffe und ggf. sensible Daten anonymisieren.
+- `BILANZKREIS`
+- `FALLGRUPPE`
+
+## Notes
+
+- Columns starting with `Unnamed` are removed automatically.
+- Regime detection is pattern-based and depends on values in `FALLGRUPPE`.
+- Remove or anonymize any sensitive company/customer data before sharing.
